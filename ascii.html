@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASCII Tattoo Video</title>
     <style>
         body {
@@ -13,11 +13,11 @@
             align-items: center;
             justify-content: center;
             min-height: 100dvh;
+            min-height: 100vh;
         }
 
         canvas {
             display: block;
-            width: 100vw;
             image-rendering: crisp-edges;
         }
     </style>
@@ -28,8 +28,9 @@
 <script>
     const CHARS = ' .:-=+*#%@';
     const PLAYBACK_FPS = 25 / 4;
+    const CHAR_RATIO = 0.55;
 
-    let frames, w, h, palette, n, current = 0, intervalId;
+    let frames, w, h, palette, n, current = 0, intervalId, drawFs;
     const canvas = document.getElementById('c');
     const ctx = canvas.getContext('2d');
 
@@ -39,9 +40,8 @@
         ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        const charW = canvas.width / w;
-        const fs = charW * 1.67;
-        ctx.font = `${fs}px monospace`;
+        const charW = drawFs * CHAR_RATIO;
+        ctx.font = `${drawFs}px monospace`;
         ctx.textBaseline = 'top';
 
         for (let r = 0; r < h; r++) {
@@ -51,7 +51,7 @@
                 const pi = packed >> 4;
                 const p = palette[pi];
                 ctx.fillStyle = `rgb(${p[0]},${p[1]},${p[2]})`;
-                ctx.fillText(CHARS[ci], c * charW, r * fs);
+                ctx.fillText(CHARS[ci], c * charW, r * drawFs);
             }
         }
     }
@@ -65,14 +65,17 @@
     function resize() {
         const dpr = window.devicePixelRatio || 1;
         const vw = window.innerWidth;
-        const charW = vw / w;
-        const fs = charW * 1.67;
-        const cw = vw * dpr;
-        const ch = fs * h * dpr;
+        const vh = window.innerHeight;
+
+        drawFs = Math.min(vw / (w * CHAR_RATIO), vh / h);
+
+        const cw = Math.round(drawFs * CHAR_RATIO * w * dpr);
+        const ch = Math.round(drawFs * h * dpr);
         canvas.width = cw;
         canvas.height = ch;
-        canvas.style.width = vw + 'px';
+        canvas.style.width = (cw / dpr) + 'px';
         canvas.style.height = (ch / dpr) + 'px';
+
         if (frames) render();
     }
 
@@ -88,9 +91,9 @@
                 palette.push([dv.getUint8(8 + i*3), dv.getUint8(9 + i*3), dv.getUint8(10 + i*3)]);
             }
             frames = new Uint8Array(buf, 8 + 16*3);
-            resize();
+
             window.addEventListener('resize', resize);
-            render();
+            resize();
             intervalId = setInterval(step, 1000 / PLAYBACK_FPS);
         })
         .catch(() => {
