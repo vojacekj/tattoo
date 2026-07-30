@@ -5,19 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASCII Tattoo Video</title>
     <style>
-        body {
+        html, body {
             margin: 0;
             padding: 0;
+            width: 100%;
+            height: 100%;
             background-color: #000;
         }
 
         canvas {
             display: block;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             image-rendering: crisp-edges;
         }
     </style>
@@ -41,6 +40,8 @@
 
         canvas.width = Math.round(vw * dpr);
         canvas.height = Math.round(vh * dpr);
+        canvas.style.width = vw + 'px';
+        canvas.style.height = vh + 'px';
         if (w) {
             drawFs = vw / (w * CHAR_RATIO);
             if (frames) render();
