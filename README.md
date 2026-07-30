@@ -1,7 +1,3 @@
-# tattoo
-
-A tattoo machine inked on skin, captured on video.
-
 - **[Video page](https://vojacekj.github.io/tattoo/)** — the original video with controls
 - **[ASCII art page](https://vojacekj.github.io/tattoo/ascii.html)** — the same video pre-rendered as playable ASCII art (no video needed, ~3 MB data loaded)
 
