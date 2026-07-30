@@ -9,12 +9,15 @@
             margin: 0;
             padding: 0;
             background-color: #000;
-            overflow: hidden;
         }
 
         canvas {
             display: block;
-            position: absolute;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             image-rendering: crisp-edges;
         }
     </style>
@@ -38,9 +41,6 @@
 
         canvas.width = Math.round(vw * dpr);
         canvas.height = Math.round(vh * dpr);
-        canvas.style.width = vw + 'px';
-        canvas.style.height = vh + 'px';
-
         if (w) {
             drawFs = vw / (w * CHAR_RATIO);
             if (frames) render();
