@@ -81,7 +81,7 @@
         render();
     }
 
-    fetch('frames.bin')
+    fetch('../frames.bin')
         .then(res => res.arrayBuffer())
         .then(buf => {
             const dv = new DataView(buf);
