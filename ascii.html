@@ -29,19 +29,20 @@
     const PLAYBACK_FPS = 25 / 6;
     const CHAR_RATIO = 0.55;
 
-    let frames, w, h, palette, n, current = 0, intervalId, drawFs;
+    let frames, w, h, palette, n, current = 0, intervalId, drawFs, dpr, vw, vh;
     const canvas = document.getElementById('c');
     const ctx = canvas.getContext('2d');
 
     function resize() {
-        const dpr = window.devicePixelRatio || 1;
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
+        dpr = window.devicePixelRatio || 1;
+        vw = window.innerWidth;
+        vh = window.innerHeight;
 
         canvas.width = Math.round(vw * dpr);
         canvas.height = Math.round(vh * dpr);
         canvas.style.width = vw + 'px';
         canvas.style.height = vh + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         if (w) {
             drawFs = vw / (w * CHAR_RATIO);
             if (frames) render();
@@ -55,7 +56,7 @@
         if (!frames) return;
         const offset = current * w * h;
         ctx.fillStyle = '#000';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, vw, vh);
 
         const charW = drawFs * CHAR_RATIO;
         ctx.font = `${drawFs}px monospace`;
