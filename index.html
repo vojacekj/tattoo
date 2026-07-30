@@ -36,6 +36,7 @@
             width: 100%;
             height: auto;
             border: 1px solid #ccc;
+            display: block;
         }
 
         footer {
@@ -50,11 +51,14 @@
 </head>
 <body>
 <section>
-    <video controls width="800" height="500" autoplay muted playsinline loop>
+    <video id="v" controls width="800" height="500" autoplay playsinline loop>
         <source src="https://github.com/vojacekj/tattoo/raw/main/video.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
 </section>
+<script>
+    document.getElementById('v').play().catch(() => {});
+</script>
 
 <footer>
     <p>&copy; 2024 tattoo.github.io</p>
