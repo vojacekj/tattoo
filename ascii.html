@@ -15,45 +15,65 @@
             min-height: 100dvh;
         }
 
-        pre {
-            font-size: calc((100vw - 20px) / 120);
-            line-height: calc((100vw - 20px) / 120);
-            letter-spacing: 0px;
-            font-kerning: none;
-            color: #fff;
-            white-space: pre;
-            overflow: hidden;
-            margin: 0;
+        canvas {
+            display: block;
+            width: 100vw;
+            image-rendering: crisp-edges;
         }
     </style>
 </head>
 <body>
-<pre id="asciiDisplay">Loading frames...</pre>
+<canvas id="c"></canvas>
 
 <script>
     const CHARS = ' .:-=+*#%@';
     const PLAYBACK_FPS = 25 / 4;
 
-    let frames, w, h, n, current = 0, intervalId;
-    const pre = document.getElementById('asciiDisplay');
+    let frames, w, h, palette, n, current = 0, intervalId;
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
 
     function render() {
         if (!frames) return;
         const offset = current * w * h;
-        let out = '';
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const charW = canvas.width / w;
+        const fs = charW * 1.67;
+        ctx.font = `${fs}px monospace`;
+        ctx.textBaseline = 'top';
+
         for (let r = 0; r < h; r++) {
             for (let c = 0; c < w; c++) {
-                out += CHARS[frames[offset + r * w + c]];
+                const packed = frames[offset + r * w + c];
+                const ci = packed & 0x0f;
+                const pi = packed >> 4;
+                const p = palette[pi];
+                ctx.fillStyle = `rgb(${p[0]},${p[1]},${p[2]})`;
+                ctx.fillText(CHARS[ci], c * charW, r * fs);
             }
-            out += '\n';
         }
-        pre.textContent = out;
     }
 
     function step() {
         current++;
         if (current >= n) current = 0;
         render();
+    }
+
+    function resize() {
+        const dpr = window.devicePixelRatio || 1;
+        const vw = window.innerWidth;
+        const charW = vw / w;
+        const fs = charW * 1.67;
+        const cw = vw * dpr;
+        const ch = fs * h * dpr;
+        canvas.width = cw;
+        canvas.height = ch;
+        canvas.style.width = vw + 'px';
+        canvas.style.height = (ch / dpr) + 'px';
+        if (frames) render();
     }
 
     fetch('frames.bin')
@@ -63,12 +83,18 @@
             w = dv.getUint8(0);
             h = dv.getUint8(1);
             n = dv.getInt32(4, true);
-            frames = new Uint8Array(buf, 8);
+            palette = [];
+            for (let i = 0; i < 16; i++) {
+                palette.push([dv.getUint8(8 + i*3), dv.getUint8(9 + i*3), dv.getUint8(10 + i*3)]);
+            }
+            frames = new Uint8Array(buf, 8 + 16*3);
+            resize();
+            window.addEventListener('resize', resize);
             render();
             intervalId = setInterval(step, 1000 / PLAYBACK_FPS);
         })
         .catch(() => {
-            pre.textContent = 'Failed to load frames.bin';
+            document.body.innerHTML = '<pre style="color:#fff">Failed to load frames.bin</pre>';
         });
 </script>
 </body>
