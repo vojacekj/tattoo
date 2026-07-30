@@ -14,6 +14,7 @@
             justify-content: center;
             min-height: 100dvh;
             min-height: 100vh;
+            overflow: hidden;
         }
 
         canvas {
@@ -67,7 +68,7 @@
         const vw = window.innerWidth;
         const vh = window.innerHeight;
 
-        drawFs = Math.min(vw / (w * CHAR_RATIO), vh / h);
+        drawFs = Math.max(vw / (w * CHAR_RATIO), vh / h);
 
         const cw = Math.round(drawFs * CHAR_RATIO * w * dpr);
         const ch = Math.round(drawFs * h * dpr);
