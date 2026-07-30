@@ -3,3 +3,5 @@
 </video>
 
 https://vojacekj.github.io/tattoo/
+
+[ASCII version](https://vojacekj.github.io/tattoo/ascii.html) — the same video pre-rendered as playable ASCII art (no video loading needed).
