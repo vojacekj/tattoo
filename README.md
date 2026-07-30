@@ -1,7 +1,10 @@
-<video controls width="800" height="500" autoplay>
-        <source src="https://github.com/vojacekj/tattoo/raw/main/video.mp4" type="video/mp4">
-</video>
+# tattoo
 
-https://vojacekj.github.io/tattoo/
+A tattoo machine inked on skin, captured on video.
 
-[ASCII version](https://vojacekj.github.io/tattoo/ascii.html) — the same video pre-rendered as playable ASCII art (no video loading needed).
+- **[Video page](https://vojacekj.github.io/tattoo/)** — the original video with controls
+- **[ASCII art page](https://vojacekj.github.io/tattoo/ascii.html)** — the same video pre-rendered as playable ASCII art (no video needed, ~3 MB data loaded)
+
+## About
+
+The ASCII version uses a custom binary format (`frames.bin`) containing 443 frames at 140×50 characters, rendered in-browser on a canvas at ~4 FPS.
