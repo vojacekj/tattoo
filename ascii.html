@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASCII Tattoo Video</title>
     <style>
-        html, body {
+        body {
             margin: 0;
             padding: 0;
             background-color: #000;
@@ -14,8 +14,7 @@
 
         canvas {
             display: block;
-            width: 100vw;
-            height: 100vh;
+            position: absolute;
             image-rendering: crisp-edges;
         }
     </style>
@@ -31,6 +30,25 @@
     let frames, w, h, palette, n, current = 0, intervalId, drawFs;
     const canvas = document.getElementById('c');
     const ctx = canvas.getContext('2d');
+
+    function resize() {
+        const dpr = window.devicePixelRatio || 1;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+
+        canvas.width = Math.round(vw * dpr);
+        canvas.height = Math.round(vh * dpr);
+        canvas.style.width = vw + 'px';
+        canvas.style.height = vh + 'px';
+
+        if (w) {
+            drawFs = vw / (w * CHAR_RATIO);
+            if (frames) render();
+        }
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
 
     function render() {
         if (!frames) return;
@@ -60,19 +78,6 @@
         render();
     }
 
-    function resize() {
-        const dpr = window.devicePixelRatio || 1;
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-
-        canvas.width = Math.round(vw * dpr);
-        canvas.height = Math.round(vh * dpr);
-
-        drawFs = vw / (w * CHAR_RATIO);
-
-        if (frames) render();
-    }
-
     fetch('frames.bin')
         .then(res => res.arrayBuffer())
         .then(buf => {
@@ -86,7 +91,6 @@
             }
             frames = new Uint8Array(buf, 8 + 16*3);
 
-            window.addEventListener('resize', resize);
             resize();
             intervalId = setInterval(step, 1000 / PLAYBACK_FPS);
         })
